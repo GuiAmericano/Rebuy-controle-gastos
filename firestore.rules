@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function eDono(dados) {
+      return request.auth != null && dados.uid == request.auth.uid;
+    }
+
+    match /usuarios/{userId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    match /lancamentos/{id} {
+      allow read: if eDono(resource.data);
+      allow create: if eDono(request.resource.data);
+      allow update: if eDono(resource.data) && eDono(request.resource.data);
+      allow delete: if eDono(resource.data);
+    }
+
+    match /metas/{id} {
+      allow read: if eDono(resource.data);
+      allow create: if eDono(request.resource.data);
+      allow update: if eDono(resource.data) && eDono(request.resource.data);
+      allow delete: if eDono(resource.data);
+    }
+
+    match /categorias/{id} {
+      allow read: if eDono(resource.data);
+      allow create: if eDono(request.resource.data);
+      allow update: if eDono(resource.data) && eDono(request.resource.data);
+      allow delete: if eDono(resource.data);
+    }
+  }
+}
